@@ -48,14 +48,13 @@ def token_required(f):
 
     return decorated
 
-    
-@app.route('/user',methods=['GET'])
-@token_required
-def get_all_users(current_user):
-    
-    if not current_user.admin:
-        return jsonify({'message' : 'Cannot perform that function!'})
-    
+@app.route('/user', methods=['GET'])
+# @token_required
+def get_all_users():
+
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
+
     users = User.query.all()
 
     output = []
@@ -70,12 +69,13 @@ def get_all_users(current_user):
 
     return jsonify({'users' : output})
 
-@app.route('/user/<public_id>', methods=['GET'])
-@token_required
-def get_one_user(current_user,public_id):
 
-    if not current_user.admin:
-        return jsonify({'message' : 'Cannot perform that function!'})
+@app.route('/user/<public_id>', methods=['GET'])
+# @token_required
+def get_one_user(public_id):
+
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
 
     user = User.query.filter_by(public_id=public_id).first()
 
@@ -89,9 +89,14 @@ def get_one_user(current_user,public_id):
     user_data['admin'] = user.admin
 
     return jsonify({'user' : user_data})
+    
 
-@app.route('/user',methods=['POST'])
-def create_user(current_user):
+@app.route('/user', methods=['POST'])
+# @token_required
+def create_user():
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
+
     data = request.get_json()
 
     hashed_password = generate_password_hash(data['password'], method='sha256')
@@ -101,13 +106,13 @@ def create_user(current_user):
     db.session.commit()
 
     return jsonify({'message' : 'New user created!'})
-
+    
 
 @app.route('/user/<public_id>', methods=['PUT'])
-@token_required
-def promote_user(current_user,public_id):
-    if not current_user.admin:
-        return jsonify({'message' : 'Cannot perform that function!'})
+# @token_required
+def promote_user(public_id):
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
 
     user = User.query.filter_by(public_id=public_id).first()
 
@@ -119,11 +124,12 @@ def promote_user(current_user,public_id):
 
     return jsonify({'message' : 'The user has been promoted!'})
 
+
 @app.route('/user/<public_id>', methods=['DELETE'])
-@token_required
-def delete_user(current_user,public_id):
-    if not current_user.admin:
-        return jsonify({'message' : 'Cannot perform that function!'})
+# @token_required
+def delete_user(public_id):
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
 
     user = User.query.filter_by(public_id=public_id).first()
 
@@ -134,6 +140,7 @@ def delete_user(current_user,public_id):
     db.session.commit()
 
     return jsonify({'message' : 'The user has been deleted!'})
+    
 
 
 @app.route('/login')
